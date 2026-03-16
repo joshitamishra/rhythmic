@@ -11,6 +11,7 @@ export default function PomodoroPage() {
     const [isIdle, setIsIdle] = useState(false)
     const audioRef = useRef<HTMLAudioElement>(null)
     const idleTimerRef = useRef<number | null>(null)
+    const transitionRef = useRef(false) // Guard to prevent onPause from stopping music during transitions
 
     const toggleMusic = () => {
         if (isPlaying) {
@@ -22,14 +23,23 @@ export default function PomodoroPage() {
     }
 
     const handleTrackEnd = () => {
-        // Move to next entry in expanded playlist
+        transitionRef.current = true
         const nextIndex = (currentTrackIndex + 1) % PLAYLIST.length
         setCurrentTrackIndex(nextIndex)
-        // Explicitly load new source so mobile browsers track the change properly
+
         if (audioRef.current) {
             audioRef.current.load()
             if (isPlaying) {
-                audioRef.current.play().catch(e => console.error("Audio transition failed:", e))
+                audioRef.current.play()
+                    .then(() => {
+                        transitionRef.current = false
+                    })
+                    .catch(e => {
+                        console.error("Audio transition failed:", e)
+                        transitionRef.current = false
+                    })
+            } else {
+                transitionRef.current = false
             }
         }
     }
@@ -86,8 +96,12 @@ export default function PomodoroPage() {
                 ref={audioRef}
                 src={PLAYLIST[currentTrackIndex]}
                 onEnded={handleTrackEnd}
-                onPause={() => setIsPlaying(false)}
-                onPlay={() => setIsPlaying(true)}
+                onPause={() => {
+                    if (!transitionRef.current) setIsPlaying(false)
+                }}
+                onPlay={() => {
+                    if (!transitionRef.current) setIsPlaying(true)
+                }}
                 preload="auto"
             />
 
