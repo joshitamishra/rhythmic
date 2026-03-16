@@ -17,7 +17,6 @@ export default function HomePage() {
     const [showModal, setShowModal] = useState(false)
     const audioRef = useRef<HTMLAudioElement>(null)
     const idleTimerRef = useRef<number | null>(null)
-    const playCountRef = useRef(0) // tracks how many times current track has played
 
     // Show Pomodoro modal once per session
     useEffect(() => {
@@ -49,15 +48,8 @@ export default function HomePage() {
     }
 
     const handleTrackEnd = () => {
-        playCountRef.current += 1
-        if (playCountRef.current < 2) {
-            // replay same track
-            audioRef.current?.play().catch(e => console.error("Audio play failed:", e))
-        } else {
-            // advance to next track and reset count
-            playCountRef.current = 0
-            setCurrentTrackIndex((prev) => (prev + 1) % PLAYLIST.length)
-        }
+        // Move to next entry in expanded playlist (each is repeated in constants)
+        setCurrentTrackIndex((prev) => (prev + 1) % PLAYLIST.length)
     }
 
     const changeBackground = () => {
@@ -105,6 +97,7 @@ export default function HomePage() {
         >
             {/* Background Audio */}
             <audio
+                key={currentTrackIndex}
                 ref={audioRef}
                 src={PLAYLIST[currentTrackIndex]}
                 onEnded={handleTrackEnd}
