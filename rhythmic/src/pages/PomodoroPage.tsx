@@ -22,8 +22,16 @@ export default function PomodoroPage() {
     }
 
     const handleTrackEnd = () => {
-        // Move to next entry in expanded playlist (each is repeated in constants)
-        setCurrentTrackIndex((prev) => (prev + 1) % PLAYLIST.length)
+        // Move to next entry in expanded playlist
+        const nextIndex = (currentTrackIndex + 1) % PLAYLIST.length
+        setCurrentTrackIndex(nextIndex)
+        // Explicitly load new source so mobile browsers track the change properly
+        if (audioRef.current) {
+            audioRef.current.load()
+            if (isPlaying) {
+                audioRef.current.play().catch(e => console.error("Audio transition failed:", e))
+            }
+        }
     }
 
     const changeBackground = () => {
@@ -34,9 +42,17 @@ export default function PomodoroPage() {
         if (audioRef.current) {
             audioRef.current.volume = 0.4;
             if (isPlaying) {
-                audioRef.current.play().catch(e => console.error("Audio play failed:", e));
+                // Only call play if actually paused to avoid redundant interruptions
+                if (audioRef.current.paused) {
+                    audioRef.current.play().catch(e => {
+                        console.error("Audio play failed:", e)
+                        setIsPlaying(false) // Sync if blocked
+                    });
+                }
             } else {
-                audioRef.current.pause();
+                if (!audioRef.current.paused) {
+                    audioRef.current.pause();
+                }
             }
         }
     }, [currentTrackIndex, isPlaying])
@@ -67,11 +83,12 @@ export default function PomodoroPage() {
         >
             {/* Background Audio */}
             <audio
-                key={currentTrackIndex}
                 ref={audioRef}
                 src={PLAYLIST[currentTrackIndex]}
                 onEnded={handleTrackEnd}
-                autoPlay={isPlaying}
+                onPause={() => setIsPlaying(false)}
+                onPlay={() => setIsPlaying(true)}
+                preload="auto"
             />
 
             {/* Top-right controls — same style as HomePage, idle-hiding */}
