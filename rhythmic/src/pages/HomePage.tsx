@@ -17,7 +17,6 @@ export default function HomePage() {
     const [showModal, setShowModal] = useState(false)
     const audioRef = useRef<HTMLAudioElement>(null)
     const idleTimerRef = useRef<number | null>(null)
-    const transitionRef = useRef(false) // Guard to prevent onPause from stopping music during transitions
 
     // Show Pomodoro modal once per session
     useEffect(() => {
@@ -49,23 +48,19 @@ export default function HomePage() {
     }
 
     const handleTrackEnd = () => {
-        transitionRef.current = true
-        const nextIndex = (currentTrackIndex + 1) % PLAYLIST.length
-        setCurrentTrackIndex(nextIndex)
+        const nextIndex = (currentTrackIndex + 1) % PLAYLIST.length;
 
         if (audioRef.current) {
-            audioRef.current.load()
+            // Manually set src to ensure it changes in the same tick as the event
+            // This is critical for mobile browsers to keep 'user gesture' trust
+            audioRef.current.src = PLAYLIST[nextIndex];
+            setCurrentTrackIndex(nextIndex);
+
             if (isPlaying) {
-                audioRef.current.play()
-                    .then(() => {
-                        transitionRef.current = false
-                    })
-                    .catch(e => {
-                        console.error("Audio transition failed:", e)
-                        transitionRef.current = false
-                    })
-            } else {
-                transitionRef.current = false
+                audioRef.current.play().catch(e => {
+                    console.error("Audio transition failed:", e);
+                    setIsPlaying(false);
+                });
             }
         }
     }
@@ -127,11 +122,12 @@ export default function HomePage() {
                 src={PLAYLIST[currentTrackIndex]}
                 onEnded={handleTrackEnd}
                 onPause={() => {
-                    if (!transitionRef.current) setIsPlaying(false)
+                    // Only sync if the audio actually stopped (not just transitioning)
+                    if (audioRef.current && !audioRef.current.seeking && audioRef.current.currentTime < audioRef.current.duration - 0.5) {
+                        setIsPlaying(false);
+                    }
                 }}
-                onPlay={() => {
-                    if (!transitionRef.current) setIsPlaying(true)
-                }}
+                onPlay={() => setIsPlaying(true)}
                 preload="auto"
             />
 

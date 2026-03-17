@@ -11,7 +11,6 @@ export default function PomodoroPage() {
     const [isIdle, setIsIdle] = useState(false)
     const audioRef = useRef<HTMLAudioElement>(null)
     const idleTimerRef = useRef<number | null>(null)
-    const transitionRef = useRef(false) // Guard to prevent onPause from stopping music during transitions
 
     const toggleMusic = () => {
         if (isPlaying) {
@@ -23,23 +22,17 @@ export default function PomodoroPage() {
     }
 
     const handleTrackEnd = () => {
-        transitionRef.current = true
-        const nextIndex = (currentTrackIndex + 1) % PLAYLIST.length
-        setCurrentTrackIndex(nextIndex)
+        const nextIndex = (currentTrackIndex + 1) % PLAYLIST.length;
 
         if (audioRef.current) {
-            audioRef.current.load()
+            audioRef.current.src = PLAYLIST[nextIndex];
+            setCurrentTrackIndex(nextIndex);
+
             if (isPlaying) {
-                audioRef.current.play()
-                    .then(() => {
-                        transitionRef.current = false
-                    })
-                    .catch(e => {
-                        console.error("Audio transition failed:", e)
-                        transitionRef.current = false
-                    })
-            } else {
-                transitionRef.current = false
+                audioRef.current.play().catch(e => {
+                    console.error("Audio transition failed:", e);
+                    setIsPlaying(false);
+                });
             }
         }
     }
@@ -97,11 +90,11 @@ export default function PomodoroPage() {
                 src={PLAYLIST[currentTrackIndex]}
                 onEnded={handleTrackEnd}
                 onPause={() => {
-                    if (!transitionRef.current) setIsPlaying(false)
+                    if (audioRef.current && !audioRef.current.seeking && audioRef.current.currentTime < audioRef.current.duration - 0.5) {
+                        setIsPlaying(false);
+                    }
                 }}
-                onPlay={() => {
-                    if (!transitionRef.current) setIsPlaying(true)
-                }}
+                onPlay={() => setIsPlaying(true)}
                 preload="auto"
             />
 
