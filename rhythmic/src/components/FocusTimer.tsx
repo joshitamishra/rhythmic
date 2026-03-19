@@ -4,9 +4,10 @@ interface Props {
   isPomodoro?: boolean;
   onStart?: () => void;
   onStop?: () => void;
+  startRequestId?: number;
 }
 
-export default function FocusTimer({ isPomodoro, onStart, onStop }: Props) {
+export default function FocusTimer({ isPomodoro, onStart, onStop, startRequestId }: Props) {
 
   const FOCUS_TIME = 1500;
   const SHORT_BREAK_TIME = 300;
@@ -19,11 +20,30 @@ export default function FocusTimer({ isPomodoro, onStart, onStop }: Props) {
 
   // Reset entirely when switching Pomodoro mode
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setRunning(false)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPhase("focus")
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCycle(1)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTime(FOCUS_TIME)
   }, [isPomodoro])
+
+  // External "start" requests (e.g. theme selection) should start the timer if not already running.
+  useEffect(() => {
+    if (!startRequestId) return
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setTime((t) => {
+      if (t === 0 && !isPomodoro) return FOCUS_TIME
+      return t
+    })
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setRunning((r) => {
+      if (!r && onStart) onStart()
+      return true
+    })
+  }, [startRequestId, isPomodoro, onStart])
 
   useEffect(() => {
 
@@ -33,30 +53,38 @@ export default function FocusTimer({ isPomodoro, onStart, onStop }: Props) {
       setTime((t) => {
         if (t <= 1) {
           clearInterval(interval)
-          setRunning(false)
-          if (onStop) onStop()
 
           if (isPomodoro) {
             if (phase === "focus") {
-              if (cycle >= 4) {
-                setPhase("longBreak")
-                return LONG_BREAK_TIME
-              } else {
-                setPhase("shortBreak")
-                return SHORT_BREAK_TIME
-              }
+              // Focus phase done → stop music, auto-start the break countdown silently
+              const nextTime = cycle >= 4 ? LONG_BREAK_TIME : SHORT_BREAK_TIME
+              setPhase(cycle >= 4 ? "longBreak" : "shortBreak")
+              setRunning(true)     // break timer ticks automatically
+              if (onStop) onStop() // music off during break
+              return nextTime
             } else {
               if (phase === "longBreak") {
+                // Full 4-cycle Pomodoro done — stop everything, wait for user
                 setCycle(1)
+                setPhase("focus")
+                setRunning(false)
+                if (onStop) onStop()
+                return FOCUS_TIME
               } else {
+                // Short break done → auto-start next focus AND resume music
                 setCycle(c => c + 1)
+                setPhase("focus")
+                setRunning(true)
+                if (onStart) onStart() // music resumes with focus
+                return FOCUS_TIME
               }
-              setPhase("focus")
-              return FOCUS_TIME
             }
           }
 
-          return 0 // Stop at 0 as it's over
+          // Non-pomodoro focus timer: stop at 0
+          setRunning(false)
+          if (onStop) onStop()
+          return 0
         }
         return t - 1
       })
@@ -64,7 +92,7 @@ export default function FocusTimer({ isPomodoro, onStart, onStop }: Props) {
 
     return () => clearInterval(interval)
 
-  }, [running, isPomodoro, phase, cycle]) // Depend on cycle and phase so the closure is fresh
+  }, [running, isPomodoro, phase, cycle, onStart, onStop]) // Depend on cycle and phase so the closure is fresh
 
   const minutes = Math.floor(time / 60)
   const seconds = time % 60
