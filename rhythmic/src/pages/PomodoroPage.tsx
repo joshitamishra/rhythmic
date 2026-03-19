@@ -12,13 +12,32 @@ export default function PomodoroPage() {
     const audioRef = useRef<HTMLAudioElement>(null)
     const idleTimerRef = useRef<number | null>(null)
 
-    const toggleMusic = () => {
-        if (isPlaying) {
-            audioRef.current?.pause()
-        } else {
-            audioRef.current?.play().catch(e => console.error("Audio play failed:", e))
+    const toggleMusic = async () => {
+        const audio = audioRef.current
+        if (!audio) return
+
+        const shouldPlay = audio.paused || audio.ended
+        if (!shouldPlay) {
+            audio.pause()
+            setIsPlaying(false)
+            return
         }
-        setIsPlaying(!isPlaying)
+
+        // Recover from "ended" / near-end state so play always restarts.
+        if (
+            audio.ended ||
+            (Number.isFinite(audio.duration) && audio.currentTime >= audio.duration - 0.25)
+        ) {
+            audio.currentTime = 0
+        }
+
+        try {
+            await audio.play()
+            setIsPlaying(true)
+        } catch (e) {
+            console.error("Audio play failed:", e)
+            setIsPlaying(false)
+        }
     }
 
     const handleTrackEnd = () => {
