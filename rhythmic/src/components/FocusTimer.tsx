@@ -4,10 +4,13 @@ interface Props {
   isPomodoro?: boolean;
   onStart?: () => void;
   onStop?: () => void;
+  onFocusComplete?: (cycle: number) => void;
+  onFinish?: (minutes: number, type: string) => void;
+  onSecondsChange?: (elapsed: number, total: number) => void;
   startRequestId?: number;
 }
 
-export default function FocusTimer({ isPomodoro, onStart, onStop, startRequestId }: Props) {
+export default function FocusTimer({ isPomodoro, onStart, onStop, onFocusComplete, onFinish, onSecondsChange, startRequestId }: Props) {
 
   const FOCUS_TIME = 1500;
   const SHORT_BREAK_TIME = 300;
@@ -51,6 +54,9 @@ export default function FocusTimer({ isPomodoro, onStart, onStop, startRequestId
 
     const interval = setInterval(() => {
       setTime((t) => {
+        if (phase === "focus" && onSecondsChange) {
+          onSecondsChange(FOCUS_TIME - t + 1, FOCUS_TIME)
+        }
         if (t <= 1) {
           clearInterval(interval)
 
@@ -59,8 +65,10 @@ export default function FocusTimer({ isPomodoro, onStart, onStop, startRequestId
               // Focus phase done → stop music, auto-start the break countdown silently
               const nextTime = cycle >= 4 ? LONG_BREAK_TIME : SHORT_BREAK_TIME
               setPhase(cycle >= 4 ? "longBreak" : "shortBreak")
-              setRunning(true)     // break timer ticks automatically
+              setRunning(true)
               if (onStop) onStop() // music off during break
+              if (onFocusComplete) onFocusComplete(cycle)
+              if (onFinish) onFinish(Math.ceil(FOCUS_TIME / 60), "focus")
               return nextTime
             } else {
               if (phase === "longBreak") {
@@ -69,6 +77,7 @@ export default function FocusTimer({ isPomodoro, onStart, onStop, startRequestId
                 setPhase("focus")
                 setRunning(false)
                 if (onStop) onStop()
+                if (onFinish) onFinish(Math.ceil(LONG_BREAK_TIME / 60), "long_break")
                 return FOCUS_TIME
               } else {
                 // Short break done → auto-start next focus AND resume music
@@ -76,6 +85,7 @@ export default function FocusTimer({ isPomodoro, onStart, onStop, startRequestId
                 setPhase("focus")
                 setRunning(true)
                 if (onStart) onStart() // music resumes with focus
+                if (onFinish) onFinish(Math.ceil(SHORT_BREAK_TIME / 60), "short_break")
                 return FOCUS_TIME
               }
             }
@@ -84,6 +94,7 @@ export default function FocusTimer({ isPomodoro, onStart, onStop, startRequestId
           // Non-pomodoro focus timer: stop at 0
           setRunning(false)
           if (onStop) onStop()
+          if (onFinish && t <= 1) onFinish(Math.ceil(FOCUS_TIME / 60), "focus")
           return 0
         }
         return t - 1
@@ -92,7 +103,7 @@ export default function FocusTimer({ isPomodoro, onStart, onStop, startRequestId
 
     return () => clearInterval(interval)
 
-  }, [running, isPomodoro, phase, cycle, onStart, onStop]) // Depend on cycle and phase so the closure is fresh
+  }, [running, isPomodoro, phase, cycle, onStart, onStop, onFocusComplete, onFinish]) // Depend on cycle and phase so the closure is fresh
 
   const minutes = Math.floor(time / 60)
   const seconds = time % 60

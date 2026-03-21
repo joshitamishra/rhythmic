@@ -6,10 +6,13 @@ type Props = {
   isPomodoro?: boolean
   onTimerStart?: () => void
   onTimerStop?: () => void
+  onFocusComplete?: (cycle: number) => void
+  onFinish?: (minutes: number, type: string) => void
+  onSecondsChange?: (elapsed: number, total: number) => void
   startRequestId?: number
 }
 
-export default function FlipCard({ mode, isPomodoro, onTimerStart, onTimerStop, startRequestId }: Props) {
+export default function FlipCard({ mode, isPomodoro, onTimerStart, onTimerStop, onFocusComplete, onFinish, onSecondsChange, startRequestId }: Props) {
 
   return (
     <div className="w-80 h-80 bg-transparent flex items-center justify-center text-white transition-all duration-500 overflow-hidden relative">
@@ -20,6 +23,9 @@ export default function FlipCard({ mode, isPomodoro, onTimerStart, onTimerStop, 
             isPomodoro={isPomodoro}
             onStart={onTimerStart}
             onStop={onTimerStop}
+            onFocusComplete={onFocusComplete}
+            onFinish={onFinish}
+            onSecondsChange={onSecondsChange}
             startRequestId={startRequestId}
           />
         ) : (

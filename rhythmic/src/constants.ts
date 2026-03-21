@@ -3,12 +3,19 @@ export type MusicTheme = {
     name: string;
     tracks: string[];
     backgroundIndex: number;
+    evolution?: number[]; // indices of BACKGROUNDS for progression
 };
 
 export const MUSIC_THEMES: MusicTheme[] = [
-    { id: "piano", name: "Piano", tracks: ["/piano1.mp3"], backgroundIndex: 0 },
-    { id: "violin", name: "Violin", tracks: ["/vilion1.mp3"], backgroundIndex: 1 },
-    { id: "ambient", name: "Ambient", tracks: ["/vilion3.mp3"], backgroundIndex: 2 },
+    { id: "piano", name: "Piano", tracks: ["/piano1.mp3", "/piano2.mp3", "/piano3.mp3", "/piano4.mp3"], backgroundIndex: 0 },
+    {
+        id: "violin",
+        name: "Violin",
+        tracks: ["/violin1.mp3", "/violin2.mp3"],
+        backgroundIndex: 0, // Placeholder, usually overridden if evolution exists
+        evolution: [9, 10, 11, 12]
+    },
+    { id: "ambient", name: "Ambient", tracks: ["/violin3.mp3"], backgroundIndex: 2 },
 ];
 
 export function getMusicThemeById(id: string | null | undefined): MusicTheme {
@@ -16,18 +23,23 @@ export function getMusicThemeById(id: string | null | undefined): MusicTheme {
     return theme ?? MUSIC_THEMES[0];
 }
 
-// Backward-compatible playlist (will be removed once all usages migrate).
+// Backward-compatible playlist
 export const PLAYLIST = MUSIC_THEMES.flatMap(t => t.tracks);
 
-// Backgrounds with new ones first
+// Backgrounds
 export const BACKGROUNDS = [
-    "url('/Snow.png')",
-    "url('/baat.png')",
-    "url('/leaves.png')",
-    "url('/alps_better.png')",
-    "url('/beach_sunset_better.png')",
-    "url('/milky_way_better.png')",
-    "url('/dark_abstract_better.png')",
-    "url('/colours.png')",
-    "url('/Serene%20afternoon%20in%20the%20Swiss%20Alps.png')"
+    "url('/snow.png')",
+    "url('/morning.png')",
+    "url('/nature.png')",
+    "url('/alps.png')",
+    "url('/beach.png')",
+    "url('/galaxy.png')",
+    "url('/abstract.png')",
+    "url('/colors.png')",
+    "url('/swiss.png')",
+    // Evolution stages for Violin Study
+    "url('/violin_evolve_1.png')",
+    "url('/violin_evolve_2.png')",
+    "url('/violin_evolve_3.png')",
+    "url('/violin_evolve_4.png')"
 ];

@@ -169,15 +169,26 @@ export default function ProfilePage() {
             </svg>
             Back
           </button>
-          <button
-            onClick={() => void logout()}
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-red-400/20 border border-white/20 hover:border-red-400/30 text-white/70 hover:text-red-200 text-sm font-medium transition-all duration-200 backdrop-blur-md"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            Logout
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate("/insights")}
+              className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white/80 hover:text-white text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95 backdrop-blur-md flex items-center gap-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              Insights
+            </button>
+            <button
+              onClick={() => void logout()}
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-red-400/20 border border-white/20 hover:border-red-400/30 text-white/70 hover:text-red-200 text-sm font-medium transition-all duration-200 backdrop-blur-md"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              Logout
+            </button>
+          </div>
         </div>
 
         {/* Main card */}
@@ -271,6 +282,27 @@ export default function ProfilePage() {
               {error}
             </p>
           )}
+
+          <div className="mt-8 pt-8 border-t border-white/10">
+            <h3 className="text-xs uppercase tracking-widest text-white/50 mb-4 block">Quick Insights</h3>
+            <button
+              onClick={() => navigate("/insights")}
+              className="w-full p-4 rounded-2xl bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 border border-white/20 transition-all flex items-center justify-between group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-xl shadow-lg border border-white/10 group-hover:scale-110 transition-transform">
+                  🏆
+                </div>
+                <div className="text-left">
+                  <div className="text-white font-bold text-sm">View Focus Achievements</div>
+                  <div className="text-white/50 text-xs">Track your progress and streaks</div>
+                </div>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white/30 group-hover:text-white/60 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>

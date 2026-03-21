@@ -1,20 +1,22 @@
-# fly.toml app configuration file generated for rhythmic on 2026-03-15T12:39:04+05:30
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
-
 app = 'rhythmic'
 primary_region = 'iad'
 
 [build]
 
+[deploy]
+  # This runs your database migrations automatically before the app starts
+  release_command = "node server/migrate.js"
+
+[env]
+  PORT = "8080"
+  NODE_ENV = "production"
+
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = 'stop'
+  auto_stop_machines = false
   auto_start_machines = true
-  min_machines_running = 0
-  processes = ['app']
+  min_machines_running = 1
 
 [[vm]]
   memory = '1gb'
