@@ -48,10 +48,19 @@ export default function PomodoroPage() {
         }
     }, [])
 
+    useEffect(() => {
+        if (isPlaying) {
+            void playSelectedTheme()
+        }
+    }, [currentTrackIndex])
+
     const handleTrackEnd = () => {
-        const next = (currentTrackIndex + 1) % themeTracks.length
-        setCurrentTrackIndex(next)
-        // src update in effect will trigger load/play
+        if (themeTracks.length <= 1) {
+            void playSelectedTheme()
+        } else {
+            const next = (currentTrackIndex + 1) % themeTracks.length
+            setCurrentTrackIndex(next)
+        }
     }
 
     const pauseMusic = () => {

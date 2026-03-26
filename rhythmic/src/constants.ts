@@ -11,7 +11,7 @@ export const MUSIC_THEMES: MusicTheme[] = [
     {
         id: "violin",
         name: "Violin",
-        tracks: ["/violin1.mp3", "/violin2.mp3"],
+        tracks: ["/violin1.mp3"],
         backgroundIndex: 0, // Placeholder, usually overridden if evolution exists
         evolution: [9, 10, 11, 12]
     },

@@ -119,9 +119,19 @@ export default function HomePage() {
         }
     }
 
+    useEffect(() => {
+        if (isPlaying) {
+            void playSelectedTheme()
+        }
+    }, [currentTrackIndex])
+
     const handleTrackEnd = () => {
-        const next = (currentTrackIndex + 1) % themeTracks.length
-        setCurrentTrackIndex(next)
+        if (themeTracks.length <= 1) {
+            void playSelectedTheme()
+        } else {
+            const next = (currentTrackIndex + 1) % themeTracks.length
+            setCurrentTrackIndex(next)
+        }
     }
 
     useEffect(() => {
