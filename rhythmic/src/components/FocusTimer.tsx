@@ -10,6 +10,27 @@ interface Props {
   startRequestId?: number;
 }
 
+const playDing = () => {
+  try {
+    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(800, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 1.5);
+    gain.gain.setValueAtTime(0.5, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.5);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 1.5);
+  } catch (e) {
+    console.error("Audio block failed", e);
+  }
+};
+
 export default function FocusTimer({ isPomodoro, onStart, onStop, onFocusComplete, onFinish, onSecondsChange, startRequestId }: Props) {
 
   const FOCUS_TIME = 1500;
@@ -46,64 +67,61 @@ export default function FocusTimer({ isPomodoro, onStart, onStop, onFocusComplet
       if (!r && onStart) onStart()
       return true
     })
-  }, [startRequestId, isPomodoro, onStart])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startRequestId])
 
   useEffect(() => {
-
     if (!running) return
 
     const interval = setInterval(() => {
-      setTime((t) => {
-        if (phase === "focus" && onSecondsChange) {
-          onSecondsChange(FOCUS_TIME - t + 1, FOCUS_TIME)
-        }
-        if (t <= 1) {
-          clearInterval(interval)
-
-          if (isPomodoro) {
-            if (phase === "focus") {
-              // Focus phase done → stop music, auto-start the break countdown silently
-              const nextTime = cycle >= 4 ? LONG_BREAK_TIME : SHORT_BREAK_TIME
-              setPhase(cycle >= 4 ? "longBreak" : "shortBreak")
-              setRunning(true)
-              if (onStop) onStop() // music off during break
-              if (onFocusComplete) onFocusComplete(cycle)
-              if (onFinish) onFinish(Math.ceil(FOCUS_TIME / 60), "focus")
-              return nextTime
-            } else {
-              if (phase === "longBreak") {
-                // Full 4-cycle Pomodoro done — stop everything, wait for user
-                setCycle(1)
-                setPhase("focus")
-                setRunning(false)
-                if (onStop) onStop()
-                if (onFinish) onFinish(Math.ceil(LONG_BREAK_TIME / 60), "long_break")
-                return FOCUS_TIME
-              } else {
-                // Short break done → auto-start next focus AND resume music
-                setCycle(c => c + 1)
-                setPhase("focus")
-                setRunning(true)
-                if (onStart) onStart() // music resumes with focus
-                if (onFinish) onFinish(Math.ceil(SHORT_BREAK_TIME / 60), "short_break")
-                return FOCUS_TIME
-              }
-            }
-          }
-
-          // Non-pomodoro focus timer: stop at 0
-          setRunning(false)
-          if (onStop) onStop()
-          if (onFinish && t <= 1) onFinish(Math.ceil(FOCUS_TIME / 60), "focus")
-          return 0
-        }
-        return t - 1
-      })
+      setTime((t) => Math.max(0, t - 1))
     }, 1000)
 
     return () => clearInterval(interval)
+  }, [running])
 
-  }, [running, isPomodoro, phase, cycle, onStart, onStop, onFocusComplete, onFinish]) // Depend on cycle and phase so the closure is fresh
+  useEffect(() => {
+    if (!running) return
+
+    if (phase === "focus" && onSecondsChange) {
+      onSecondsChange(FOCUS_TIME - time, FOCUS_TIME)
+    }
+
+    if (time <= 0 && running) {
+      playDing()
+
+      if (isPomodoro) {
+        if (phase === "focus") {
+          const nextTime = cycle >= 4 ? LONG_BREAK_TIME : SHORT_BREAK_TIME
+          setPhase(cycle >= 4 ? "longBreak" : "shortBreak")
+          setRunning(false)
+          setTime(nextTime)
+          if (onStop) onStop()
+          if (onFocusComplete) onFocusComplete(cycle)
+          if (onFinish) onFinish(Math.ceil(FOCUS_TIME / 60), "focus")
+        } else if (phase === "longBreak") {
+          setCycle(1)
+          setPhase("focus")
+          setRunning(false)
+          setTime(FOCUS_TIME)
+          if (onStop) onStop()
+          if (onFinish) onFinish(Math.ceil(LONG_BREAK_TIME / 60), "long_break")
+        } else {
+          setCycle(c => c + 1)
+          setPhase("focus")
+          setRunning(false)
+          setTime(FOCUS_TIME)
+          if (onStop) onStop()
+          if (onFinish) onFinish(Math.ceil(SHORT_BREAK_TIME / 60), "short_break")
+        }
+      } else {
+        setRunning(false)
+        setTime(0)
+        if (onStop) onStop()
+        if (onFinish) onFinish(Math.ceil(FOCUS_TIME / 60), "focus")
+      }
+    }
+  }, [time, running, isPomodoro, phase, cycle, onStop, onFocusComplete, onFinish, onSecondsChange, FOCUS_TIME, SHORT_BREAK_TIME, LONG_BREAK_TIME])
 
   const minutes = Math.floor(time / 60)
   const seconds = time % 60
@@ -140,7 +158,7 @@ export default function FocusTimer({ isPomodoro, onStart, onStop, onFocusComplet
           className="flex-1 max-w-[120px] py-3 bg-white/20 hover:bg-white/30 border border-white/30 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg backdrop-blur-sm"
           onClick={() => {
             if (time === 0 && !isPomodoro) setTime(FOCUS_TIME)
-            if (!running && onStart) onStart()
+            if (!running && onStart && (!isPomodoro || phase === "focus")) onStart()
             if (running && onStop) onStop()
             setRunning(!running)
           }}

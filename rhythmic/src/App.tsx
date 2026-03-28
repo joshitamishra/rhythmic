@@ -3,6 +3,7 @@ import HomePage from "./pages/HomePage"
 import PomodoroPage from "./pages/PomodoroPage"
 import ProfilePage from "./pages/ProfilePage"
 import InsightsPage from "./pages/InsightsPage"
+import CoffeePage from "./pages/CoffeePage"
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Route path="/pomodoro" element={<PomodoroPage />} />
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/insights" element={<InsightsPage />} />
+      <Route path="/coffee" element={<CoffeePage />} />
     </Routes>
   )
 }

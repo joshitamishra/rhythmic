@@ -204,6 +204,12 @@ export default function PomodoroPage() {
             >
                 <div className="flex items-center gap-4">
                     <button
+                        onClick={() => window.open("/coffee", "_blank")}
+                        className="px-4 py-2 rounded-full bg-orange-500/20 hover:bg-orange-500/40 border border-orange-500/30 text-orange-100 text-sm font-medium transition-all duration-300 backdrop-blur-md flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95"
+                    >
+                        Buy Us Coffee ☕
+                    </button>
+                    <button
                         onClick={() => navigate("/")}
                         className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white/90 text-sm font-medium transition-all duration-300 backdrop-blur-md flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95"
                     >
