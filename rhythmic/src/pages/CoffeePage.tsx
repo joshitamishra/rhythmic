@@ -1,26 +1,8 @@
 import { useNavigate } from "react-router-dom"
-import { useEffect } from "react"
 import { BACKGROUNDS } from "../constants"
 
 export default function CoffeePage() {
     const navigate = useNavigate()
-
-    useEffect(() => {
-        const d = document
-        const scriptId = 'razorpay-embed-btn-js'
-        const existingScript = d.getElementById(scriptId)
-
-        if (!existingScript) {
-            const s = d.createElement('script')
-            s.defer = true
-            s.id = scriptId
-            s.src = 'https://cdn.razorpay.com/static/embed_btn/bundle.js'
-            d.body.appendChild(s)
-        } else {
-            const rzp = (window as any)['__rzp__']
-            if (rzp && rzp.init) rzp.init()
-        }
-    }, [])
 
     return (
         <div
@@ -44,14 +26,19 @@ export default function CoffeePage() {
                     If you're enjoying Rhythmic and finding it helpful for your focus and productivity, consider supporting us! Your contribution helps keep the app running and improving.
                 </p>
 
-                <div className="mb-8 overflow-hidden rounded-xl transition-all hover:scale-105 active:scale-95">
-                    <div
-                        className="razorpay-embed-btn"
-                        data-url="https://pages.razorpay.com/pl_SWXfLwNjb0ftzv/view"
-                        data-text="Buy Us Coffee"
-                        data-color="#528FF0"
-                        data-size="large"
-                    />
+                <div className="mb-8 flex flex-col items-center gap-1 transition-all hover:scale-105 active:scale-95">
+                    <a
+                        href="https://pages.razorpay.com/pl_SWXfLwNjb0ftzv/view"
+                        target="_self"
+                        rel="noopener noreferrer"
+                        className="px-8 py-3.5 rounded-[4px] bg-[#528FF0] hover:bg-[#407ee0] text-white font-bold text-[15px] shadow-md transition-colors w-full max-w-[240px]"
+                    >
+                        Buy Us Coffee
+                    </a>
+                    <div className="flex items-center gap-1 px-2 py-0.5 mt-1 bg-white rounded-[4px] shadow-sm">
+                        <span className="text-[10px] text-gray-500 font-medium">Powered by</span>
+                        <span className="text-[10px] text-[#0A2540] font-black italic tracking-tight">Razorpay</span>
+                    </div>
                 </div>
 
                 <button
