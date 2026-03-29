@@ -107,15 +107,15 @@ export default function InsightsPage() {
       <div className="relative max-w-7xl mx-auto py-10 lg:py-20 px-6 lg:px-16 min-h-screen flex flex-col">
 
         {/* Navigation & Header */}
-        <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 mb-16">
-          <div className="flex flex-col sm:flex-row gap-4">
+        <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 lg:gap-10 mb-10 lg:mb-16">
+          <div className="flex flex-wrap gap-3 sm:gap-4">
             <motion.button
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               onClick={() => navigate("/")}
-              className="group flex items-center gap-4 w-fit px-6 py-3 rounded-2xl bg-zinc-900/80 hover:bg-zinc-900 border border-white/10 text-white font-black transition-all backdrop-blur-3xl shadow-2xl ring-1 ring-white/5"
+              className="group flex items-center gap-3 sm:gap-4 w-fit px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl bg-zinc-900/80 hover:bg-zinc-900 border border-white/10 text-white font-black text-sm sm:text-base transition-all backdrop-blur-3xl shadow-2xl ring-1 ring-white/5"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 group-hover:-translate-x-1.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5 group-hover:-translate-x-1.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
               BACK
@@ -126,9 +126,9 @@ export default function InsightsPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
               onClick={() => window.open("/coffee", "_blank")}
-              className="group flex items-center gap-3 w-fit px-6 py-3 rounded-2xl bg-orange-600/20 hover:bg-orange-600/30 border border-orange-500/30 text-orange-400 font-black transition-all backdrop-blur-3xl shadow-2xl ring-1 ring-orange-500/20"
+              className="group flex items-center gap-2 sm:gap-3 w-fit px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl bg-orange-600/20 hover:bg-orange-600/30 border border-orange-500/30 text-orange-400 font-black text-xs sm:text-sm transition-all backdrop-blur-3xl shadow-2xl ring-1 ring-orange-500/20"
             >
-              ☕ BUY US COFFEE
+              ☕ COFFEE
             </motion.button>
           </div>
 

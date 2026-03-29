@@ -98,6 +98,11 @@ export default function HomePage() {
         const nextTheme = getMusicThemeById(themeId)
         setBgIndex(nextTheme.backgroundIndex ?? 0)
 
+        // Force playback on theme change
+        setTimeout(() => {
+            void playSelectedTheme()
+        }, 100)
+
         if (mode === "focus") {
             setFocusStartRequestId(n => n + 1)
         }
@@ -167,10 +172,22 @@ export default function HomePage() {
             }, 6000)
         }
     }, [location.search, location.pathname, navigate])
+    useEffect(() => {
+        const params = new URLSearchParams(location.search)
+        const paramMode = params.get("mode")
+        if (paramMode === "stopwatch") setMode("stopwatch")
+        if (paramMode === "timer") setMode("focus")
+    }, [location.search])
+
+    useEffect(() => {
+        const checkMobile = () => { /* Not needed for current layout */ }
+        window.addEventListener("resize", checkMobile)
+        return () => window.removeEventListener("resize", checkMobile)
+    }, [])
 
     return (
         <div
-            className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden transition-all duration-1000 ease-in-out bg-cover bg-center"
+            className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-x-hidden transition-all duration-1000 ease-in-out bg-cover bg-center"
             style={{
                 backgroundImage: evolveIndex !== null && currentTheme.evolution
                     ? BACKGROUNDS[currentTheme.evolution[evolveIndex]]
@@ -211,61 +228,68 @@ export default function HomePage() {
                 )}
             </AnimatePresence>
 
-            <div className={`absolute top-6 right-6 z-20 flex flex-col items-end gap-3 transition-all duration-700 ease-in-out ${isIdle ? "opacity-0 translate-y-[-10px] pointer-events-none" : "opacity-100 translate-y-0"}`}>
-                <div className="flex items-center gap-4">
+            {/* Single Top Panel - Unified & Centered */}
+            <div className={`absolute top-6 left-1/2 -translate-x-1/2 z-40 w-full max-w-[90%] sm:max-w-fit transition-all duration-700 ${isIdle ? "opacity-0 -translate-y-4 pointer-events-none" : "opacity-100 translate-y-0"}`}>
+                <div className="flex flex-wrap items-center justify-center gap-1.5 p-1 rounded-[24px] bg-white/10 hover:bg-white/15 border border-white/10 backdrop-blur-3xl shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-all">
+                    <button
+                        onClick={() => setBgIndex((prev) => (prev + 1) % BACKGROUNDS.length)}
+                        className="p-2 sm:p-3 rounded-2xl hover:bg-white/10 text-white/80 hover:text-white transition-all active:scale-90"
+                        title="Change Background"
+                    >
+                        🖼️
+                    </button>
+                    <div className="w-px h-6 bg-white/10 mx-1 hidden sm:block" />
                     <button
                         onClick={() => window.open("/coffee", "_blank")}
-                        className="px-4 py-2 rounded-full bg-orange-500/20 hover:bg-orange-500/40 border border-orange-500/30 text-orange-100 text-sm font-medium transition-all duration-300 backdrop-blur-md flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95"
+                        className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl hover:bg-orange-500/20 text-orange-200/90 hover:text-orange-200 transition-all font-bold text-xs sm:text-sm"
                     >
-                        Buy Us Coffee ☕
+                        <span>☕</span>
+                        <span className="hidden sm:inline">Buy Us Coffee</span>
                     </button>
                     <button
                         onClick={() => navigate("/profile")}
-                        className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white/90 text-sm font-medium transition-all duration-300 backdrop-blur-md flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95"
+                        className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl hover:bg-white/10 text-white/80 hover:text-white transition-all font-bold text-xs sm:text-sm"
                     >
-                        Profile
+                        <span>👤</span>
+                        <span className="hidden sm:inline">Profile</span>
                     </button>
                     <button
                         onClick={() => navigate("/insights")}
-                        className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white/90 text-sm font-medium transition-all duration-300 backdrop-blur-md flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95"
+                        className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl hover:bg-white/10 text-white/80 hover:text-white transition-all font-bold text-xs sm:text-sm"
                     >
-                        Insights
+                        <span>📊</span>
+                        <span className="hidden sm:inline">Insights</span>
                     </button>
-                    <button
-                        onClick={() => setShowModal(true)}
-                        className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white/90 text-sm font-medium transition-all duration-300 backdrop-blur-md flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95"
-                    >
-                        Pomodoro Mode
-                    </button>
-                    <button
-                        onClick={() => setBgIndex((prev) => (prev + 1) % BACKGROUNDS.length)}
-                        className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white/90 text-sm font-medium transition-all duration-300 backdrop-blur-md flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95"
-                    >
-                        Change Background
-                    </button>
+                    <div className="w-px h-6 bg-white/10 mx-1 hidden sm:block" />
                     <button
                         onClick={toggleMusic}
-                        className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white/90 text-sm font-medium transition-all duration-300 backdrop-blur-md flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95"
+                        className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl hover:bg-white/10 text-white/80 hover:text-white transition-all font-bold text-xs sm:text-sm"
                     >
-                        {isPlaying ? "Pause Music" : "Play Music"}
+                        <span>{isPlaying ? "⏸️" : "▶️"}</span>
+                        <span className="hidden sm:inline">{isPlaying ? "Pause Music" : "Play Music"}</span>
                     </button>
-                </div>
-
-                <div className="flex flex-wrap justify-end gap-2 max-w-[520px]">
-                    {MUSIC_THEMES.map(theme => (
-                        <button
-                            key={theme.id}
-                            onClick={() => selectTheme(theme.id)}
-                            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 backdrop-blur-md border ${theme.id === selectedThemeId ? "bg-white/25 text-white border-white/30 shadow-lg" : "bg-white/10 text-white/80 border-white/20 hover:bg-white/15 hover:text-white"}`}
-                        >
-                            {theme.name}
-                        </button>
-                    ))}
                 </div>
             </div>
 
-            <div className="relative z-10 flex flex-col items-center w-full px-4">
-                <h1 className="text-5xl font-bold mb-10 text-white drop-shadow-xl tracking-tight">Rhythmic</h1>
+            <div className="relative z-10 flex flex-col items-center w-full px-4 pt-12">
+                <div className={`flex flex-col items-center transition-all duration-1000 ${isIdle ? "scale-110 translate-y-20" : "scale-100 translate-y-0"}`}>
+                    <h1 className="text-6xl sm:text-8xl font-black mb-6 text-white drop-shadow-2xl tracking-tighter">Rhythmic</h1>
+
+                    {/* Centered Theme Pill - prevents overlap - hide on idle */}
+                    <div className={`flex flex-wrap items-center justify-center gap-2 p-1.5 rounded-3xl bg-black/20 backdrop-blur-3xl border border-white/10 mb-8 shadow-2xl transition-all duration-700 ${isIdle ? "opacity-0 pointer-events-none -translate-y-2 text-transparent" : "opacity-100"}`}>
+                        {MUSIC_THEMES.map(theme => (
+                            <button
+                                key={theme.id}
+                                onClick={() => selectTheme(theme.id)}
+                                className={`px-5 py-2 rounded-[20px] text-sm font-bold transition-all duration-300 ${theme.id === selectedThemeId ? "bg-white text-black shadow-[0_4px_20px_rgba(255,255,255,0.3)] scale-105" : "text-white/70 hover:text-white hover:bg-white/10"}`}
+                            >
+                                {theme.name}
+                            </button>
+                        ))}
+                    </div>
+
+                </div>
+
                 <FlipCard
                     mode={mode}
                     onTimerStart={playSelectedTheme}
@@ -274,12 +298,22 @@ export default function HomePage() {
                     onSecondsChange={handleSecondsChange}
                     startRequestId={focusStartRequestId}
                 />
-                <button
-                    className="mt-10 px-6 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/30 text-white/90 font-medium transition-all duration-300 hover:scale-105 shadow-[0_0_15px_rgba(255,255,255,0.1)] backdrop-blur-md flex items-center gap-2"
-                    onClick={() => setMode(mode === "focus" ? "stopwatch" : "focus")}
-                >
-                    Flip to {mode === "focus" ? "Stopwatch" : "Focus"}
-                </button>
+
+                {/* Bottom Toggle Hub - hide on idle */}
+                <div className={`flex flex-wrap items-center justify-center gap-4 mt-12 mb-8 transition-all duration-700 ${isIdle ? "opacity-0 pointer-events-none translate-y-2" : "opacity-100"}`}>
+                    <button
+                        className="px-6 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white/90 font-bold transition-all duration-300 hover:scale-105 shadow-xl backdrop-blur-md flex items-center gap-2 text-sm"
+                        onClick={() => setMode(mode === "focus" ? "stopwatch" : "focus")}
+                    >
+                        🔄 {mode === "focus" ? "Stopwatch" : "Timer"}
+                    </button>
+                    <button
+                        className="px-6 py-2.5 rounded-2xl bg-orange-600/20 hover:bg-orange-600/40 border border-orange-500/30 text-orange-200 font-bold transition-all duration-300 hover:scale-105 shadow-xl backdrop-blur-md flex items-center gap-2 text-sm"
+                        onClick={() => navigate("/pomodoro")}
+                    >
+                        🍅 Pomodoro
+                    </button>
+                </div>
             </div>
 
             <PomodoroWelcomeModal
