@@ -1,4 +1,4 @@
-app = 'rhythmic'
+app = 'rhythm'
 primary_region = 'iad'
 
 [build]

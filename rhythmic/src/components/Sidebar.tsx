@@ -28,7 +28,7 @@ export default function Sidebar({ isPlaying, onToggleMusic, onChangeBackground }
             >
                 {/* Logo */}
                 <div className="mb-2">
-                    <h2 className="text-white font-bold text-xl tracking-tight drop-shadow">Rhythmic</h2>
+                    <h2 className="text-white font-bold text-xl tracking-tight drop-shadow">Rhythm</h2>
                     <p className="text-white/50 text-xs mt-0.5">Your focus companion</p>
                 </div>
 

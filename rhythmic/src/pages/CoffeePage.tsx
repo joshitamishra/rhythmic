@@ -23,7 +23,7 @@ export default function CoffeePage() {
                 </h1>
 
                 <p className="text-white/80 text-lg leading-relaxed mb-8">
-                    If you're enjoying Rhythmic and finding it helpful for your focus and productivity, consider supporting us! Your contribution helps keep the app running and improving.
+                    If you're enjoying Rhythm and finding it helpful for your focus and productivity, consider supporting us! Your contribution helps keep the app running and improving.
                 </p>
 
                 <div className="mb-8 flex flex-col items-center gap-1 transition-all hover:scale-105 active:scale-95">

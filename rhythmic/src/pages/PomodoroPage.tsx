@@ -253,7 +253,7 @@ export default function PomodoroPage() {
 
             <div className="relative z-10 flex flex-col items-center w-full px-4 pt-12">
                 <div className={`flex flex-col items-center transition-all duration-1000 ${isIdle ? "scale-110 translate-y-20" : "scale-100 translate-y-0"}`}>
-                    <h1 className="text-6xl sm:text-8xl font-black mb-4 text-white drop-shadow-2xl tracking-tighter uppercase">Rhythmic</h1>
+                    <h1 className="text-6xl sm:text-8xl font-black mb-4 text-white drop-shadow-2xl tracking-tighter uppercase">Rhythm</h1>
 
                     <div className="flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md">
                         <span className="text-base">🍅</span>

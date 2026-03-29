@@ -222,7 +222,7 @@ export default function HomePage() {
                         </div>
                         <h3 className="text-xl font-bold text-white mb-1">Thank You!</h3>
                         <p className="text-white/80 text-sm leading-relaxed">
-                            Your payment was successful. We deeply appreciate your support for Rhythmic!
+                            Your payment was successful. We deeply appreciate your support for Rhythm!
                         </p>
                     </motion.div>
                 )}
@@ -273,7 +273,7 @@ export default function HomePage() {
 
             <div className="relative z-10 flex flex-col items-center w-full px-4 pt-12">
                 <div className={`flex flex-col items-center transition-all duration-1000 ${isIdle ? "scale-110 translate-y-20" : "scale-100 translate-y-0"}`}>
-                    <h1 className="text-6xl sm:text-8xl font-black mb-6 text-white drop-shadow-2xl tracking-tighter">Rhythmic</h1>
+                    <h1 className="text-6xl sm:text-8xl font-black mb-6 text-white drop-shadow-2xl tracking-tighter">Rhythm</h1>
 
                     {/* Centered Theme Pill - prevents overlap - hide on idle */}
                     <div className={`flex flex-wrap items-center justify-center gap-2 p-1.5 rounded-3xl bg-black/20 backdrop-blur-3xl border border-white/10 mb-8 shadow-2xl transition-all duration-700 ${isIdle ? "opacity-0 pointer-events-none -translate-y-2 text-transparent" : "opacity-100"}`}>

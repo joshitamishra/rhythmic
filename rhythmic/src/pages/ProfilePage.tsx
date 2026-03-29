@@ -15,7 +15,7 @@ type User = {
 
 function getBg() {
   try {
-    const id = localStorage.getItem("rhythmic_music_theme") ?? MUSIC_THEMES[0]?.id ?? "piano"
+    const id = localStorage.getItem("rhythm_music_theme") ?? MUSIC_THEMES[0]?.id ?? "piano"
     const theme = getMusicThemeById(id)
     return BACKGROUNDS[theme.backgroundIndex ?? 0]
   } catch {

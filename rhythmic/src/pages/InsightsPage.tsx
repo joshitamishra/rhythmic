@@ -342,7 +342,7 @@ export default function InsightsPage() {
 
         {/* Footer */}
         <footer className="mt-auto py-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
-          <p className="text-white/20 text-[11px] font-black uppercase tracking-[0.5em]">RHYTHMIC • FOCUS ANALYTICS</p>
+          <p className="text-white/20 text-[11px] font-black uppercase tracking-[0.5em]">RHYTHM • FOCUS ANALYTICS</p>
           <div className="flex gap-4">
             {[1, 2, 3].map(i => <div key={i} className="w-1.5 h-1.5 rounded-full bg-white/10" />)}
           </div>
