@@ -7,12 +7,12 @@ export type MusicTheme = {
 };
 
 export const MUSIC_THEMES: MusicTheme[] = [
-    { id: "piano", name: "Piano", tracks: ["/piano1.mp3", "/piano2.mp3", "/piano3.mp3", "/piano4.mp3"], backgroundIndex: 0 },
+    { id: "piano", name: "Piano", tracks: ["/piano1.mp3"], backgroundIndex: 0 },
     {
         id: "violin",
         name: "Violin",
         tracks: ["/violin1.mp3"],
-        backgroundIndex: 0, // Placeholder, usually overridden if evolution exists
+        backgroundIndex: 0, 
         evolution: [9, 10, 11, 12]
     },
     { id: "ambient", name: "Ambient", tracks: ["/violin3.mp3"], backgroundIndex: 2 },

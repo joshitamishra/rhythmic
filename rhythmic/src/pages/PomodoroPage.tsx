@@ -20,6 +20,8 @@ export default function PomodoroPage() {
 
     const audioRef = useRef<HTMLAudioElement>(null)
     const idleTimerRef = useRef<number | null>(null)
+    // Ref so playSelectedTheme always reads the latest theme, avoids stale closures
+    const themeIdRef = useRef(themeId)
 
     const selectedThemeId = themeId || "piano"
     const currentTheme = getMusicThemeById(selectedThemeId)
@@ -55,9 +57,7 @@ export default function PomodoroPage() {
     }, [currentTrackIndex])
 
     const handleTrackEnd = () => {
-        if (themeTracks.length <= 1) {
-            void playSelectedTheme()
-        } else {
+        if (themeTracks.length > 1) {
             const next = (currentTrackIndex + 1) % themeTracks.length
             setCurrentTrackIndex(next)
         }
@@ -81,20 +81,22 @@ export default function PomodoroPage() {
         const audio = audioRef.current
         if (!audio) return
 
-        // Ensure the selected theme is loaded at the current index.
-        const track = themeTracks[currentTrackIndex] ?? themeTracks[0]
+        const latestTracks = getMusicThemeById(themeIdRef.current).tracks
+        const track = latestTracks[currentTrackIndex] ?? latestTracks[0]
         const trackUrl = new URL(track, window.location.origin).href
+
         if (audio.src !== trackUrl) {
             audio.src = trackUrl
             audio.load()
-        }
-
-        // Recover from "ended" / near-end state so play always restarts.
-        if (
-            audio.ended ||
-            (Number.isFinite(audio.duration) && audio.currentTime >= audio.duration - 0.25)
-        ) {
-            audio.currentTime = 0
+            await new Promise<void>((resolve) => {
+                const done = () => resolve()
+                audio.addEventListener('canplay', done, { once: true })
+                audio.addEventListener('error', done, { once: true })
+                setTimeout(done, 1000) 
+            })
+        } else if (isPlaying && !audio.paused && !audio.ended) {
+            // Already playing the correct track, avoid double play
+            return
         }
 
         try {
@@ -111,15 +113,14 @@ export default function PomodoroPage() {
         else void playSelectedTheme()
     }
 
-    const selectTheme = (id: string) => {
+    const selectTheme = async (id: string) => {
+        // Update ref synchronously FIRST so playSelectedTheme reads the correct theme
+        themeIdRef.current = id
         setThemeId(id)
         setCurrentTrackIndex(0)
-        setEvolveIndex(null) // Reset when switching manually
-        // Attempt immediate play
-        setTimeout(() => {
-            void playSelectedTheme()
-        }, 100)
-        // Request a start if already running
+        setEvolveIndex(null)
+
+        await playSelectedTheme()
         setFocusStartRequestId(prev => prev + 1)
     }
 
@@ -181,6 +182,7 @@ export default function PomodoroPage() {
                 ref={audioRef}
                 src={themeTracks[currentTrackIndex]}
                 onEnded={handleTrackEnd}
+                loop={themeTracks.length === 1}
                 onPause={() => {
                     if (audioRef.current && !audioRef.current.seeking && audioRef.current.currentTime < audioRef.current.duration - 0.5) {
                         setIsPlaying(false);
