@@ -222,13 +222,6 @@ export default function PomodoroPage() {
                     </button>
                     <div className="w-px h-6 bg-white/10 mx-1 hidden sm:block" />
                     <button
-                        onClick={() => window.open("/coffee", "_blank")}
-                        className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl hover:bg-orange-500/20 text-orange-200/90 hover:text-orange-200 transition-all font-bold text-xs sm:text-sm"
-                    >
-                        <span>☕</span>
-                        <span className="hidden sm:inline">Buy Us Coffee</span>
-                    </button>
-                    <button
                         onClick={() => navigate("/profile")}
                         className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl hover:bg-white/10 text-white/80 hover:text-white transition-all font-bold text-xs sm:text-sm"
                     >
@@ -249,6 +242,14 @@ export default function PomodoroPage() {
                     >
                         <span>{isPlaying ? "⏸️" : "▶️"}</span>
                         <span className="hidden sm:inline">{isPlaying ? "Pause Music" : "Play Music"}</span>
+                    </button>
+                    <div className="w-px h-6 bg-white/10 mx-1 hidden sm:block" />
+                    <button
+                        onClick={() => window.open("/coffee", "_blank")}
+                        className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl hover:bg-orange-500/20 text-orange-200/90 hover:text-orange-200 transition-all font-bold text-xs sm:text-sm"
+                    >
+                        <span>☕</span>
+                        <span className="hidden sm:inline">Buy Us Coffee</span>
                     </button>
                 </div>
             </div>

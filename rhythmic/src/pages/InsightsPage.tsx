@@ -120,16 +120,6 @@ export default function InsightsPage() {
               </svg>
               BACK
             </motion.button>
-
-            <motion.button
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
-              onClick={() => window.open("/coffee", "_blank")}
-              className="group flex items-center gap-2 sm:gap-3 w-fit px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl bg-orange-600/20 hover:bg-orange-600/30 border border-orange-500/30 text-orange-400 font-black text-xs sm:text-sm transition-all backdrop-blur-3xl shadow-2xl ring-1 ring-orange-500/20"
-            >
-              ☕ COFFEE
-            </motion.button>
           </div>
 
           <motion.div

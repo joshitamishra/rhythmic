@@ -171,12 +171,6 @@ export default function ProfilePage() {
           </button>
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <button
-              onClick={() => window.open("/coffee", "_blank")}
-              className="px-4 py-2 rounded-full bg-orange-500/20 hover:bg-orange-500/40 border border-orange-500/30 text-orange-200 hover:text-orange-100 text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95 backdrop-blur-md flex items-center gap-2"
-            >
-              ☕ Coffee
-            </button>
-            <button
               onClick={() => navigate("/insights")}
               className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white/80 hover:text-white text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95 backdrop-blur-md flex items-center gap-2"
             >
